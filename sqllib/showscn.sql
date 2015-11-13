@@ -1,0 +1,49 @@
+/*
+  查询系统的scn 使用情况
+*/
+
+SET LINE 200
+SET SERVEROUTPUT ON
+SET echo OFF
+SET feedback OFF
+SET heading OFF
+SET pagesize 0
+SET termout OFF
+SET trimout ON　　　
+SET trimspool ON　　
+SET verify OFF
+
+DEFINE spfile=&1
+
+spool &spfile
+DECLARE
+CURSOR SCN IS
+  SELECT
+   VERSION,
+   DATE_TIME,
+   DBMS_FLASHBACK.GET_SYSTEM_CHANGE_NUMBER CURRENT_SCN,
+   INDICATOR
+  FROM
+  (
+   SELECT
+   VERSION,
+   TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS') DATE_TIME,
+   (
+    ((TO_NUMBER(TO_CHAR(SYSDATE,'YYYY'))-1988)*12*31*24*60*60) +
+    ((TO_NUMBER(TO_CHAR(SYSDATE,'MM'))-1)*31*24*60*60) +
+    (((TO_NUMBER(TO_CHAR(SYSDATE,'DD'))-1))*24*60*60) +
+    (TO_NUMBER(TO_CHAR(SYSDATE,'HH24'))*60*60) +
+    (TO_NUMBER(TO_CHAR(SYSDATE,'MI'))*60) +
+    (TO_NUMBER(TO_CHAR(SYSDATE,'SS')))
+    ) * (16*1024) INDICATOR
+   FROM V$INSTANCE
+  );
+
+BEGIN
+  FOR I IN SCN LOOP
+    DBMS_OUTPUT.PUT_LINE('version="'||I.VERSION||'" datatime="'||I.DATE_TIME||'" currentscn="'||I.CURRENT_SCN||'" allscn="'||I.INDICATOR||'"');
+  END LOOP;
+END;
+/
+spool off;
+exit;
