@@ -34,7 +34,10 @@ select name,value,ISDEFAULT from v$parameter where lower(name) in
 'fast_start_mttr_target',
 'backup_tape_io_slaves',
 'log_buffer',
-'pga_aggregate_target');
+'pga_aggregate_target',
+'memory_target',
+'processes',
+'asm_power_limit');
 
 BEGIN
  FOR c in pars LOOP

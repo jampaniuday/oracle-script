@@ -18,9 +18,6 @@ LANG=en_US.utf8
 basepath=$(dirname $0)
 tmpfile="/tmp/$0.$$"
 
-#阈值定义
-_DEFAULT="WARNING|fail|errs|ORA-|abort|corrupt|bad|not complete"
-: ${ERRORLIST:=$_DEFAULT}
 
 #查询log日志位置
 #调用sqlplus 库脚本

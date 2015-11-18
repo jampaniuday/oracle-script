@@ -1,59 +1,56 @@
-#!/bin/sh
-#############################################################
-###Write by YCL 20130831
-###CHECK RAC +ASM FILESYSTEM 
-###This script is a health check script of oracle database
-#############################################################
-VERSION="1"
-MODIFIED_TIME="20140415"
-DEPLOY_UNION="COMMON"
-EDITER_MAIL="iomp.zh@ccb.com"
+#!/usr/bin/env bash
+#************************************************#
+# 文件名：DBCHK_ORA_CRSSSTATUS.sh            #
+# 作  者：ycl                            #
+# 日  期：2015年 09月24日                        #
+# 功  能：检查RAC crs组件状态    #
+# 复核人：                                       #
+#************************************************#
+#脚本描述
+#keys:name|crs组件名称|string,type|类型|string,target|目标|string,status|状态|string,host|节点|string
+#describe:检查RAC crs组件状态
+#threshold:
+#stype:list
+#version:g.0.1
 
+#参数定义
 LANG=en_US.utf8
-sh_dir=/home/ap/opscloud/health_check/ORACLE
-log_dir=/home/ap/opscloud/logs
-para_dir=/home/ap/opscloud/V_COMMON.cfg
-tmp_dir=$log_dir/oracle
-Compliant=0
-NonCompliant=1
-Log=2
-filename=`basename $0`
-[ -d ${log_dir} ] || mkdir -p ${log_dir}
-[ -d ${tmp_dir} ] || mkdir -p ${tmp_dir}
-[ -f /home/ap/opscloud/logs/${filename%%.sh}.out ] && rm /home/ap/opscloud/logs/${filename%%.sh}.out
-ps -ef |grep ora_smon |grep -v grep|awk  '{print $1, substr($NF,10)}'>$log_dir/oracount.list
+basepath=$(dirname $0)
+tmpfile="/tmp/$0.$$"
 
+#命令输出
+which ocrcheck >/dev/null
+if [ $? -eq 0 ];then
+cat ocrcheck.txt |awk 'BEGIN{FS=":"}
+/Version/ {printf "version=\"%s\" ",gsub(/[ ]+/,"",$2)}
+/Total space/ {printf "Totalspace=\"%s\" ",gsub(/[ ]+/,"",$2)}
+/Used space/ {printf "usedspace=\"%s\" ",gsub(/[ ]+/,"",$2)}
+/Available space/{printf "availablespace=\"%s\" ",gsub(/[ ]+/,"",$2)}'
 
-
-resulta=0
-
-data_num=`/home/db/grid/product/11.2.0/bin/ocrcheck |grep '+DATA'|wc -l`
-arch_num=`/home/db/grid/product/11.2.0/bin/ocrcheck |grep '+ARCH'|wc -l`
-#data_num=`ocrcheck |grep '+DATA'|wc -l`
-#arch_num=`ocrcheck |grep '+ARCH'|wc -l`
-let v_num=data_num+arch_num
-
-if [ $v_num -eq 2 ]
-then
-  echo '数据库实例'$sid': 正常' > $log_dir/DBCHK_ORA_OCRCHECK_RES.out;
-else
-#echo "Compliant";
-  let resulta=resulta+1
-  echo '数据库实例'$sid': 不正常' > $log_dir/DBCHK_ORA_OCRCHECK_RES.out;
-/home/db/grid/product/11.2.0/bin/ocrcheck >> $log_dir/DBCHK_ORA_OCRCHECK_RES.out;
-#ocrcheck >> $log_dir/DBCHK_ORA_OCRCHECK_RES.out;
 fi
 
-if [ $resulta -ne 0 ]
-then
-echo "$NonCompliant";
-else
-echo "$Compliant";
-fi
-#echo $?
+:<<BLOCK
+cat <<EOF | awk 'BEGIN{FS=":"} /Version/ {printf "version=\"%s\" ",gsub(/[ ]+/,"",$2)} /Total space/ {printf "Totalspace=\"%s\" ",gsub(/[ ]+/,"",$2)} /Used space/ {printf "usedspace=\"%s\" ",gsub(/[ ]+/,"",$2)} /Available space/{printf "availablespace=\"%s\" ",gsub(/[ ]+/,"",$2)}'
+Status of Oracle Cluster Registry is as follows :
+	 Version                  :          3
+	 Total space (kbytes)     :     262120
+	 Used space (kbytes)      :       2876
+	 Available space (kbytes) :     259244
+	 ID                       : 2086263606
+	 Device/File Name         :       +crs
+                                    Device/File integrity check succeeded
 
+                                    Device/File not configured
 
-#print result
-cat $log_dir/${filename%%.sh}.out
+                                    Device/File not configured
 
+                                    Device/File not configured
+
+                                    Device/File not configured
+
+	 Cluster registry integrity check succeeded
+
+	 Logical corruption check succeeded
+EOF
+BLOCK
 exit 0
