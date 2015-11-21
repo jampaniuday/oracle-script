@@ -16,7 +16,8 @@
 #参数定义
 LANG=en_US.utf8
 basepath=$(dirname $0)
-tmpfile="/tmp/$0.$$"
+bname=$(basename $0)
+tmpfile="/tmp/${bname}.$$"
 
 #阈值定义
 _DEFAULT="WARNING|fail|errs|ORA-|abort|corrupt|bad|not complete"

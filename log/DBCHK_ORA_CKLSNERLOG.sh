@@ -16,7 +16,8 @@
 #参数定义
 LANG=en_US.utf8
 basepath=$(dirname $0)
-tmpfile="/tmp/$0.$$"
+bname=$(basename $0)
+tmpfile="/tmp/${bname}.$$"
 datetime=`date "+%F %H:%M"`
 
 #add listener log

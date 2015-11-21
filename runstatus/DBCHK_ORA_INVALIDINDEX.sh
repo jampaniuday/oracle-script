@@ -7,7 +7,6 @@
 # 复核人：                                       #
 #************************************************#
 #脚本描述
-DBMS_OUTPUT.PUT_LINE('owner="'||j.owner||'" indexname="'||j.index_name||'" tablename="'||j.table_name||'" status="'||j.status||'"');
 #keys:owner|用户|string,indexname|索引名称|string,tablename|表名称|string,status|状态|string
 #describe:检查数据库失效的索引
 #threshold:
@@ -17,7 +16,8 @@ DBMS_OUTPUT.PUT_LINE('owner="'||j.owner||'" indexname="'||j.index_name||'" table
 #参数定义
 LANG=en_US.utf8
 basepath=$(dirname $0)
-tmpfile="/tmp/$0.$$"
+bname=$(basename $0)
+tmpfile="/tmp/${bname}.$$"
 
 #调用sqlplus 库脚本
 sqlplus -S "/as sysdba" 1>&2 2>/dev/null <<EOF

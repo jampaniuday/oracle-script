@@ -17,7 +17,8 @@ logswitchtime="2015110411" count="1"
 #参数定义
 LANG=en_US.utf8
 basepath=$(dirname $0)
-tmpfile="/tmp/$0.$$"
+bname=$(basename $0)
+tmpfile="/tmp/${bname}.$$"
 
 #调用sqlplus 库脚本
 sqlplus -S "/as sysdba" 1>&2 2>/dev/null <<EOF
